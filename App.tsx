@@ -1,21 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+import HomeScreen from './app/screens/HomeScreen';
+import colors from './app/config/colors';
+
+const client = new ApolloClient({
+	uri: 'https://wmovies-api.herokuapp.com/graphql',
+	cache: new InMemoryCache(),
+});
+
+const App: React.FC = () => {
+	return (
+		<ApolloProvider client={client}>
+			<SafeAreaView style={styles.container}>
+				<HomeScreen />
+				<StatusBar style="light" />
+			</SafeAreaView>
+		</ApolloProvider>
+	);
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+	container: {
+		flex: 1,
+		backgroundColor: colors.dark,
+	},
 });
+
+export default App;
