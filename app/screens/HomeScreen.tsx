@@ -6,6 +6,7 @@ import {
 	FlatList,
 	Text,
 	Button,
+	useWindowDimensions,
 } from 'react-native';
 import { useQuery } from '@apollo/client';
 
@@ -20,15 +21,28 @@ const renderMovie = ({ item }: { item: IMovie }) => (
 );
 
 const HomeScreen: React.FC<Props> = (props) => {
-	const [loadedMovies, setLoadedMovies] = useState(10);
-
 	const count = 10;
 
+	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+	const [loadedMovies, setLoadedMovies] = useState(10);
 	const { data, loading, error, fetchMore } = useQuery(GET_MOVIES, {
 		variables: { pos: 0, count },
 	});
 
-	const handlePress = async () => {};
+	const handlePress = () => {
+		const newPos = loadedMovies + count - 1;
+		setLoadedMovies((prev) => prev + count);
+
+		return fetchMore({
+			variables: { pos: newPos, count },
+			updateQuery: (prev, { fetchMoreResult }) => {
+				if (!fetchMoreResult) return prev;
+				return Object.assign({}, prev, {
+					movies: [...prev.movies, ...fetchMoreResult.movies],
+				});
+			},
+		});
+	};
 
 	return (
 		<View style={styles.container}>
@@ -40,7 +54,8 @@ const HomeScreen: React.FC<Props> = (props) => {
 					keyExtractor={(movie: IMovie) => movie.id}
 					data={data.movies}
 					renderItem={renderMovie}
-					numColumns={2}
+					key={screenHeight >= screenWidth ? 'portrait' : 'landscape'}
+					numColumns={Math.floor(screenWidth / 153)}
 					ListFooterComponent={
 						<Button title="More" onPress={handlePress} />
 					}
@@ -60,5 +75,3 @@ const styles = StyleSheet.create({
 		// alignContent: 'center',
 	},
 });
-
-export default HomeScreen;

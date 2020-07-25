@@ -28,6 +28,7 @@ const Card: React.FC<Props> = (props) => {
 				style={styles.coverImage}
 				source={getImageSource(props.img)}
 				resizeMode="contain"
+				fadeDuration={100}
 			/>
 			<View style={styles.titleContainer}>
 				<Text style={styles.title}>{formatTitle(props.title)}</Text>

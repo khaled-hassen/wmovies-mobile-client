@@ -6,6 +6,8 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import HomeScreen from './app/screens/HomeScreen';
 import colors from './app/config/colors';
 
+// TODO polish the website
+
 const client = new ApolloClient({
 	uri: 'https://wmovies-api.herokuapp.com/graphql',
 	cache: new InMemoryCache(),
