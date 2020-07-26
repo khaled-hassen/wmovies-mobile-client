@@ -1,42 +1,30 @@
-import React, { useState } from 'react';
-import {
-	StyleSheet,
-	View,
-	Platform,
-	FlatList,
-	Text,
-	Button,
-	useWindowDimensions,
-} from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { useQuery } from '@apollo/client';
 
-import Card from '../components/Card';
 import { GET_MOVIES } from '../graphql/queries';
-import { IMovie } from '../config/types';
+import { layout, MOVIES_LOADED_PER_REQUEST } from '../config/config';
+import MoviesListContainer from '../components/MoviesListContainer';
 
 // PROPS TYPES
 interface Props {}
 
-const renderMovie = ({ item }: { item: IMovie }) => (
-	<Card id={item.id} title={item.title} img={item.img} />
-);
-
 // COMPONENT
 const HomeScreen: React.FC<Props> = (props) => {
-	const count = 10;
+	const loadedMovies = useRef(10);
 
-	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-	const [loadedMovies, setLoadedMovies] = useState(10);
 	const { data, loading, error, fetchMore } = useQuery(GET_MOVIES, {
-		variables: { pos: 0, count },
+		variables: { pos: 0, count: MOVIES_LOADED_PER_REQUEST },
 	});
 
 	const handlePress = () => {
-		const newPos = loadedMovies + count - 1;
-		setLoadedMovies((prev) => prev + count);
+		loadedMovies.current = loadedMovies.current + MOVIES_LOADED_PER_REQUEST;
 
 		return fetchMore({
-			variables: { pos: newPos, count },
+			variables: {
+				pos: loadedMovies.current,
+				count: MOVIES_LOADED_PER_REQUEST,
+			},
 			updateQuery: (prev, { fetchMoreResult }) => {
 				if (!fetchMoreResult) return prev;
 				return Object.assign({}, prev, {
@@ -48,21 +36,11 @@ const HomeScreen: React.FC<Props> = (props) => {
 
 	return (
 		<View style={styles.container}>
-			{loading ? (
-				<Text>Loading...</Text>
-			) : (
-				<FlatList
-					contentContainerStyle={styles.list}
-					keyExtractor={(movie: IMovie) => movie.id}
-					data={data.movies}
-					renderItem={renderMovie}
-					key={screenHeight >= screenWidth ? 'portrait' : 'landscape'}
-					numColumns={Math.floor(screenWidth / 153)}
-					ListFooterComponent={
-						<Button title="More" onPress={handlePress} />
-					}
-				/>
-			)}
+			<MoviesListContainer
+				loading={loading}
+				movies={data ? data.movies : []}
+				onMorePressed={handlePress}
+			/>
 		</View>
 	);
 };
@@ -70,10 +48,7 @@ const HomeScreen: React.FC<Props> = (props) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingTop: Platform.OS === 'android' ? 50 : 0,
-	},
-	list: {
-		flexGrow: 1,
+		paddingTop: layout.paddingTop,
 	},
 });
 

@@ -8,4 +8,5 @@ export type TRootScreens = {
 	Home: undefined;
 	AZ: undefined;
 	To30Rated: undefined;
+	Genre: undefined;
 };

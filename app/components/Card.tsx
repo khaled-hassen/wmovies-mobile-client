@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 
-import colors from '../config/colors';
+import { colors } from '../config/config';
 
 interface Props {
 	id: string;
@@ -9,8 +9,8 @@ interface Props {
 	img: { src: string };
 }
 
-const getImageSource = (img: { src: string }) => ({
-	uri: img.src,
+const getImageSource = (src: string) => ({
+	uri: src,
 	width: 153,
 	height: 230,
 });
@@ -22,13 +22,19 @@ const formatTitle = (title: string) => {
 };
 
 const Card: React.FC<Props> = (props) => {
+	const FALLBACK_IMAGE_SRC =
+		'https://vw.ffmovies.sc/wp-content/themes/assets/images/noimg.png';
+
+	const [imageSrc, setImageSrc] = useState(props.img.src);
+
 	return (
 		<View style={styles.container}>
 			<Image
 				style={styles.coverImage}
-				source={getImageSource(props.img)}
+				source={getImageSource(imageSrc)}
 				resizeMode="contain"
 				fadeDuration={100}
+				onError={() => setImageSrc(FALLBACK_IMAGE_SRC)}
 			/>
 			<View style={styles.titleContainer}>
 				<Text style={styles.title}>{formatTitle(props.title)}</Text>
