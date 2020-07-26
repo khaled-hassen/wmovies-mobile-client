@@ -4,9 +4,9 @@
     "slug": "wmovies",
     "version": "1.0.0",
     "orientation": "default",
-    "icon": "./app/assets/icon.png",
+    "icon": "",
     "splash": {
-      "image": "./app/assets/splash.png",
+      "image": "",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

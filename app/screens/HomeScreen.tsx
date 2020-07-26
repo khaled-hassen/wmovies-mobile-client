@@ -14,12 +14,14 @@ import Card from '../components/Card';
 import { GET_MOVIES } from '../graphql/queries';
 import { IMovie } from '../config/types';
 
+// PROPS TYPES
 interface Props {}
 
 const renderMovie = ({ item }: { item: IMovie }) => (
 	<Card id={item.id} title={item.title} img={item.img} />
 );
 
+// COMPONENT
 const HomeScreen: React.FC<Props> = (props) => {
 	const count = 10;
 
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
 	},
 	list: {
 		flexGrow: 1,
-		// alignContent: 'center',
 	},
 });
+
+export default HomeScreen;
