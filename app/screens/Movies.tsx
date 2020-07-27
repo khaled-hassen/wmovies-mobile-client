@@ -7,10 +7,12 @@ import { layout, MOVIES_LOADED_PER_REQUEST } from '../config/config';
 import MoviesListContainer from '../components/MoviesListContainer';
 
 // PROPS TYPES
-interface Props {}
+interface Props {
+	onMovieSelected: (id: string, title: string) => void;
+}
 
 // COMPONENT
-const HomeScreen: React.FC<Props> = (props) => {
+const Movies: React.FC<Props> = (props) => {
 	const queryPosition = useRef(0);
 
 	const { data, loading, error, fetchMore } = useQuery(GET_MOVIES, {
@@ -41,6 +43,7 @@ const HomeScreen: React.FC<Props> = (props) => {
 	return (
 		<View style={styles.container}>
 			<MoviesListContainer
+				onMovieSelected={props.onMovieSelected}
 				totalMovies={
 					numberData && !numberLoading
 						? numberData.moviesNumber
@@ -61,4 +64,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default HomeScreen;
+export default Movies;

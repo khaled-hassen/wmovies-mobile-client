@@ -4,9 +4,14 @@ export interface IMovie {
 	img: { src: string };
 }
 
-export type TRootScreens = {
-	Home: undefined;
+export type THomeTabScreens = {
+	Movies: undefined;
 	AZ: undefined;
 	To30Rated: undefined;
 	Genre: undefined;
+};
+
+export type TStackScreens = {
+	Home: undefined;
+	Movie: { id: string; title: string };
 };

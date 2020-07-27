@@ -13,7 +13,9 @@ import MoviesListContainer from '../components/MoviesListContainer';
 // TODO add letter selection
 
 // PROPS TYPES
-interface Props {}
+interface Props {
+	onMovieSelected: (id: string, title: string) => void;
+}
 
 // COMPONENT
 const AZ: React.FC<Props> = (props) => {
@@ -73,6 +75,7 @@ const AZ: React.FC<Props> = (props) => {
 				))}
 			</Picker>
 			<MoviesListContainer
+				onMovieSelected={props.onMovieSelected}
 				totalMovies={
 					numberData && !numberLoading
 						? numberData.moviesByLetterNumber

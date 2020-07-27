@@ -7,7 +7,9 @@ import { layout } from '../config/config';
 import MoviesListContainer from '../components/MoviesListContainer';
 
 // PROPS TYPES
-interface Props {}
+interface Props {
+	onMovieSelected: (id: string, title: string) => void;
+}
 
 // COMPONENT
 const To30Rated: React.FC<Props> = (props) => {
@@ -16,6 +18,7 @@ const To30Rated: React.FC<Props> = (props) => {
 	return (
 		<View style={styles.container}>
 			<MoviesListContainer
+				onMovieSelected={props.onMovieSelected}
 				totalMovies={30}
 				loading={loading}
 				movies={data ? data.top30Rated : []}

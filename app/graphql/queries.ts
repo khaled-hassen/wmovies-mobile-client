@@ -65,3 +65,21 @@ export const GET_MOVIES_NUMBER_BY_GENDER = gql`
 		moviesByGenreNumber(genre: $genre)
 	}
 `;
+
+export const GET_MOVIE = gql`
+	query GetMovie($id: ID!) {
+		movie(id: $id) {
+			title
+			year
+			genre
+			director
+			streamLink
+			rating
+			img {
+				src
+			}
+			description
+			duration
+		}
+	}
+`;

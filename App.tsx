@@ -3,37 +3,40 @@ import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import HomeScreen from './app/screens/HomeScreen';
-import { colors } from './app/config/config';
-import { TRootScreens } from './app/config/types';
-import To30Rated from './app/screens/To30Rated';
-import AZ from './app/screens/AZ';
-import Genre from './app/screens/Genre';
+import { TStackScreens } from './app/config/types';
+import MovieScreen from './app/screens/MovieScreen';
+import HomeScreens from './app/screens/HomeScreens';
 
 // TODO handle errors
 // TODO polish the website
 // TODO optimize the app
+// TODO add swipe up to refresh in every screen
 
 const client = new ApolloClient({
 	uri: 'https://wmovies-api.herokuapp.com/graphql',
 	cache: new InMemoryCache(),
 });
 
-const Tabs = createBottomTabNavigator<TRootScreens>();
+// NAVIGATION
+const Stack = createStackNavigator<TStackScreens>();
 
 const App: React.FC = () => {
 	return (
 		<SafeAreaView style={styles.container}>
 			<ApolloProvider client={client}>
 				<NavigationContainer>
-					<Tabs.Navigator initialRouteName="Home">
-						<Tabs.Screen name="Home" component={HomeScreen} />
-						<Tabs.Screen name="To30Rated" component={To30Rated} />
-						<Tabs.Screen name="AZ" component={AZ} />
-						<Tabs.Screen name="Genre" component={Genre} />
-					</Tabs.Navigator>
+					<Stack.Navigator initialRouteName="Home">
+						<Stack.Screen name="Home" component={HomeScreens} />
+						<Stack.Screen
+							name="Movie"
+							component={MovieScreen}
+							options={({ route }) => ({
+								title: route.params.title,
+							})}
+						/>
+					</Stack.Navigator>
 				</NavigationContainer>
 				<StatusBar style="auto" />
 			</ApolloProvider>
