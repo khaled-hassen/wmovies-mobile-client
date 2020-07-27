@@ -14,4 +14,5 @@ export type THomeTabScreens = {
 export type TStackScreens = {
 	Home: undefined;
 	Movie: { id: string; title: string };
+	Search: undefined;
 };

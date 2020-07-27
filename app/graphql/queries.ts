@@ -83,3 +83,15 @@ export const GET_MOVIE = gql`
 		}
 	}
 `;
+
+export const SEARCH_MOVIES = gql`
+	query Search($title: String!) {
+		search(title: $title) {
+			id
+			title
+			img {
+				src
+			}
+		}
+	}
+`;
