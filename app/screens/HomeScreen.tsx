@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useQuery } from '@apollo/client';
 
-import { GET_MOVIES } from '../graphql/queries';
+import { GET_MOVIES, GET_MOVIES_NUMBER } from '../graphql/queries';
 import { layout, MOVIES_LOADED_PER_REQUEST } from '../config/config';
 import MoviesListContainer from '../components/MoviesListContainer';
 
@@ -11,18 +11,22 @@ interface Props {}
 
 // COMPONENT
 const HomeScreen: React.FC<Props> = (props) => {
-	const loadedMovies = useRef(10);
+	const queryPosition = useRef(0);
 
 	const { data, loading, error, fetchMore } = useQuery(GET_MOVIES, {
 		variables: { pos: 0, count: MOVIES_LOADED_PER_REQUEST },
 	});
+	const { data: numberData, loading: numberLoading } = useQuery(
+		GET_MOVIES_NUMBER
+	);
 
 	const handlePress = () => {
-		loadedMovies.current = loadedMovies.current + MOVIES_LOADED_PER_REQUEST;
+		queryPosition.current =
+			queryPosition.current + MOVIES_LOADED_PER_REQUEST - 1;
 
 		return fetchMore({
 			variables: {
-				pos: loadedMovies.current,
+				pos: queryPosition.current,
 				count: MOVIES_LOADED_PER_REQUEST,
 			},
 			updateQuery: (prev, { fetchMoreResult }) => {
@@ -37,6 +41,11 @@ const HomeScreen: React.FC<Props> = (props) => {
 	return (
 		<View style={styles.container}>
 			<MoviesListContainer
+				totalMovies={
+					numberData && !numberLoading
+						? numberData.moviesNumber
+						: undefined
+				}
 				loading={loading}
 				movies={data ? data.movies : []}
 				onMorePressed={handlePress}

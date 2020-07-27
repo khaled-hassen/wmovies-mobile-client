@@ -1,10 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { layout, MOVIES_LOADED_PER_REQUEST } from '../config/config';
+import { layout, MOVIES_LOADED_PER_REQUEST, ALPHABET } from '../config/config';
 import { useQuery } from '@apollo/client';
 import { Picker } from '@react-native-community/picker';
 
-import { GET_MOVIES_BY_LETTER } from '../graphql/queries';
+import {
+	GET_MOVIES_BY_LETTER,
+	GET_MOVIES_NUMBER_BY_LETTER,
+} from '../graphql/queries';
 import MoviesListContainer from '../components/MoviesListContainer';
 
 // TODO add letter selection
@@ -15,7 +18,7 @@ interface Props {}
 // COMPONENT
 const AZ: React.FC<Props> = (props) => {
 	const [activeLetter, setActiveLetter] = useState('A');
-	const loadedMovies = useRef(10);
+	const queryPosition = useRef(0);
 
 	const { data, loading, error, fetchMore } = useQuery(GET_MOVIES_BY_LETTER, {
 		variables: {
@@ -24,18 +27,26 @@ const AZ: React.FC<Props> = (props) => {
 			count: MOVIES_LOADED_PER_REQUEST,
 		},
 	});
+	const { data: numberData, loading: numberLoading } = useQuery(
+		GET_MOVIES_NUMBER_BY_LETTER,
+		{
+			variables: { letter: activeLetter },
+		}
+	);
 
 	const handlePress = () => {
-		loadedMovies.current = loadedMovies.current + MOVIES_LOADED_PER_REQUEST;
+		queryPosition.current =
+			queryPosition.current + MOVIES_LOADED_PER_REQUEST - 1;
 
 		return fetchMore({
 			variables: {
 				letter: activeLetter,
-				pos: loadedMovies.current - 1,
+				pos: queryPosition.current,
 				count: MOVIES_LOADED_PER_REQUEST,
 			},
 			updateQuery: (prev, { fetchMoreResult }) => {
 				if (!fetchMoreResult) return prev;
+
 				return Object.assign({}, prev, {
 					moviesByLetter: [
 						...prev.moviesByLetter,
@@ -46,22 +57,27 @@ const AZ: React.FC<Props> = (props) => {
 		});
 	};
 
+	useEffect(() => {
+		queryPosition.current = 0;
+	}, [activeLetter]);
+
 	return (
 		<View style={styles.container}>
 			<Picker
 				selectedValue={activeLetter}
-				style={{ height: 50, width: 100, backgroundColor: 'black' }}
+				style={{ height: 50, width: 100 }}
 				onValueChange={(letter) => setActiveLetter(letter.toString())}
 			>
-				<Picker.Item label="Java" value="java" />
-				<Picker.Item label="Java" value="java" />
-				<Picker.Item label="Java" value="java" />
-				<Picker.Item label="Java" value="java" />
-				<Picker.Item label="Java" value="java" />
-				<Picker.Item label="Java" value="java" />
-				<Picker.Item label="Java" value="java" />
+				{ALPHABET.map((letter) => (
+					<Picker.Item label={letter} value={letter} key={letter} />
+				))}
 			</Picker>
 			<MoviesListContainer
+				totalMovies={
+					numberData && !numberLoading
+						? numberData.moviesByLetterNumber
+						: undefined
+				}
 				loading={loading}
 				movies={data ? data.moviesByLetter : []}
 				onMorePressed={handlePress}

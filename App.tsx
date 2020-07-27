@@ -14,6 +14,7 @@ import Genre from './app/screens/Genre';
 
 // TODO handle errors
 // TODO polish the website
+// TODO optimize the app
 
 const client = new ApolloClient({
 	uri: 'https://wmovies-api.herokuapp.com/graphql',

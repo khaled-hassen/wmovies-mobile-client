@@ -12,6 +12,12 @@ export const GET_MOVIES = gql`
 	}
 `;
 
+export const GET_MOVIES_NUMBER = gql`
+	{
+		moviesNumber
+	}
+`;
+
 export const GET_TOP_RATED = gql`
 	{
 		top30Rated {
@@ -33,5 +39,29 @@ export const GET_MOVIES_BY_LETTER = gql`
 				src
 			}
 		}
+	}
+`;
+
+export const GET_MOVIES_NUMBER_BY_LETTER = gql`
+	query MoviesByLetterNumber($letter: String!) {
+		moviesByLetterNumber(letter: $letter)
+	}
+`;
+
+export const GET_MOVIES_BY_GENRE = gql`
+	query MoviesByGenre($genre: String!, $pos: Int!, $count: Int!) {
+		moviesByGenre(genre: $genre, pos: $pos, count: $count) {
+			id
+			title
+			img {
+				src
+			}
+		}
+	}
+`;
+
+export const GET_MOVIES_NUMBER_BY_GENDER = gql`
+	query MoviesByGenreNumber($genre: String!) {
+		moviesByGenreNumber(genre: $genre)
 	}
 `;

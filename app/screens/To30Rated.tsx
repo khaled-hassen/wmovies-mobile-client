@@ -16,6 +16,7 @@ const To30Rated: React.FC<Props> = (props) => {
 	return (
 		<View style={styles.container}>
 			<MoviesListContainer
+				totalMovies={30}
 				loading={loading}
 				movies={data ? data.top30Rated : []}
 			/>

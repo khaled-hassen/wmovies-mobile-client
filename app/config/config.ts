@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 // IMMUTABLE GLOBAL VARIABLES
-export const MOVIES_LOADED_PER_REQUEST = 10;
+export const MOVIES_LOADED_PER_REQUEST = 30;
 export const ALPHABET = [
 	'A',
 	'B',
@@ -31,35 +31,35 @@ export const ALPHABET = [
 	'Z',
 ];
 export const GENRES = [
-	'War',
-	'Drama',
-	'Comedy',
-	'Horror',
-	'Romance',
-	'Thriller',
-	'History',
 	'Action',
-	'Documentary',
-	'Animation',
-	'Western',
-	'Crime',
 	'Action & Adventure',
 	'Adventure',
-	'Sci-Fi',
-	'Mystery',
-	'Music',
-	'Musical',
+	'Animation',
 	'Biography',
+	'Comedy',
+	'Crime',
+	'Documentary',
+	'Drama',
 	'Family',
 	'Fantasy',
-	'Sport',
+	'Foreign',
+	'History',
+	'Horror',
+	'Music',
+	'Musical',
+	'Mystery',
 	'News',
+	'Reality',
+	'Romance',
+	'Sci-Fi',
+	'Science Fiction',
+	'Soap',
+	'Sport',
 	'TV Movie',
 	'Talk',
-	'Reality',
-	'Soap',
-	'Science Fiction',
-	'Foreign',
+	'Thriller',
+	'War',
+	'Western',
 ];
 
 // STYLES

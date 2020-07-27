@@ -16,6 +16,7 @@ interface Props {
 	onMorePressed?: () => void;
 	movies: IMovie[] | [];
 	loading: boolean;
+	totalMovies: number;
 }
 
 const renderMovie = ({ item }: { item: IMovie }) => (
@@ -41,7 +42,8 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 					key={screenHeight >= screenWidth ? 'portrait' : 'landscape'}
 					numColumns={Math.floor(screenWidth / 153)}
 					ListFooterComponent={
-						props.onMorePressed ? (
+						props.onMorePressed &&
+						props.movies.length < props.totalMovies ? (
 							<Button
 								title="More"
 								onPress={props.onMorePressed}
