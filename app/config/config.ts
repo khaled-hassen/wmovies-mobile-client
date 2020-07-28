@@ -64,6 +64,8 @@ export const GENRES = [
 export const colors = {
 	dark: '#1b262c',
 	light: '#FFF',
+	activeColor: '#3BC2ED',
+	inactiveColor: '#FEFEFE',
 };
 
 export const layout = {

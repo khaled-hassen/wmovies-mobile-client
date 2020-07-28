@@ -41,11 +41,11 @@ const AZ: React.FC<Props> = (props) => {
 		}
 	);
 
-	const handlePress = () => {
+	const handlePress = async () => {
 		queryPosition.current =
 			queryPosition.current + MOVIES_LOADED_PER_REQUEST - 1;
 
-		return fetchMore({
+		await fetchMore({
 			variables: {
 				letter: activeLetter,
 				pos: queryPosition.current,
@@ -74,7 +74,12 @@ const AZ: React.FC<Props> = (props) => {
 		<View style={styles.container}>
 			<Picker
 				selectedValue={activeLetter}
-				style={{ height: 50, width: 100 }}
+				style={{
+					height: 50,
+					width: 150,
+					backgroundColor: 'white',
+					alignSelf: 'center',
+				}}
 				onValueChange={(letter) => setActiveLetter(letter.toString())}
 			>
 				{ALPHABET.map((letter) => (

@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import {
 	StyleSheet,
 	FlatList,
-	Button,
 	useWindowDimensions,
 	View,
 	Text,
@@ -11,11 +10,12 @@ import {
 
 import Card from './Card';
 import { IMovie } from '../config/types';
+import MoreButton from './MoreButton';
 
 // PROPS TYPES
 interface Props {
 	flatList?: React.RefObject<FlatList<IMovie>>;
-	onMorePressed?: () => void;
+	onMorePressed?: () => Promise<void>;
 	movies: IMovie[] | [];
 	loading: boolean;
 	totalMovies: number;
@@ -38,6 +38,7 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 	);
 
 	const [refreshing, setRefreshing] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
 	const handleRefresh = async () => {
@@ -47,6 +48,18 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 			setRefreshing(false);
 		} catch (error) {
 			setRefreshing(false);
+		}
+	};
+
+	const handleOnPress = async () => {
+		if (props.onMorePressed) {
+			setLoading(true);
+			try {
+				await props.onMorePressed();
+				setLoading(false);
+			} catch {
+				setLoading(false);
+			}
 		}
 	};
 
@@ -86,9 +99,9 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 						ListFooterComponent={
 							props.onMorePressed &&
 							props.movies.length < props.totalMovies ? (
-								<Button
-									title="More"
-									onPress={props.onMorePressed}
+								<MoreButton
+									onPress={handleOnPress}
+									loading={loading}
 								/>
 							) : null
 						}

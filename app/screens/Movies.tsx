@@ -24,11 +24,11 @@ const Movies: React.FC<Props> = (props) => {
 		GET_MOVIES_NUMBER
 	);
 
-	const handlePress = () => {
+	const handlePress = async () => {
 		queryPosition.current =
 			queryPosition.current + MOVIES_LOADED_PER_REQUEST - 1;
 
-		return fetchMore({
+		await fetchMore({
 			variables: {
 				pos: queryPosition.current,
 				count: MOVIES_LOADED_PER_REQUEST,

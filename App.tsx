@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, Button } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import {
 	NavigationContainer,
@@ -13,12 +13,13 @@ import { TStackScreens } from './app/config/types';
 import MovieScreen from './app/screens/MovieScreen';
 import HomeScreens from './app/screens/HomeScreens';
 import Search from './app/screens/Search';
-import { TextInput } from 'react-native-gesture-handler';
+import SearchButton from './app/components/SearchButton';
+import SearchInput from './app/components/SearchInput';
 
 // TODO handle errors
 // TODO polish the website
 // TODO optimize the app
-// TODO add swipe up to refresh in every screen
+// TODO create custom pickers
 
 const client = new ApolloClient({
 	uri: 'https://wmovies-api.herokuapp.com/graphql',
@@ -41,8 +42,7 @@ const App: React.FC = () => {
 							component={HomeScreens}
 							options={({ navigation }) => ({
 								headerRight: () => (
-									<Button
-										title="Search"
+									<SearchButton
 										onPress={() =>
 											navigation.navigate('Search')
 										}
@@ -63,10 +63,10 @@ const App: React.FC = () => {
 							}}
 							name="Search"
 							options={{
-								headerRight: () => (
-									<TextInput
-										placeholder="Search movie"
+								headerTitle: () => (
+									<SearchInput
 										value={movieSearch}
+										onClear={() => setMovieSearch('')}
 										onChangeText={(val) =>
 											setMovieSearch(val)
 										}

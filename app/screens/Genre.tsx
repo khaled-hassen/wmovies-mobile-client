@@ -41,11 +41,11 @@ const Genre: React.FC<Props> = (props) => {
 		}
 	);
 
-	const handlePress = () => {
+	const handlePress = async () => {
 		queryPosition.current =
 			queryPosition.current + MOVIES_LOADED_PER_REQUEST - 1;
 
-		return fetchMore({
+		await fetchMore({
 			variables: {
 				genre: activeGenre,
 				pos: queryPosition.current,
@@ -73,7 +73,12 @@ const Genre: React.FC<Props> = (props) => {
 		<View style={styles.container}>
 			<Picker
 				selectedValue={activeGenre}
-				style={{ height: 50, width: 100 }}
+				style={{
+					height: 50,
+					width: 150,
+					backgroundColor: 'white',
+					alignSelf: 'center',
+				}}
 				onValueChange={(genre) => setActiveGenre(genre.toString())}
 			>
 				{GENRES.map((genre) => (
