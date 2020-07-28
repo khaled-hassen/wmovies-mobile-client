@@ -2,7 +2,11 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, SafeAreaView, Button } from 'react-native';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+	NavigationContainer,
+	Theme,
+	DarkTheme,
+} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { TStackScreens } from './app/config/types';
@@ -30,7 +34,7 @@ const App: React.FC = () => {
 	return (
 		<SafeAreaView style={styles.container}>
 			<ApolloProvider client={client}>
-				<NavigationContainer>
+				<NavigationContainer theme={theme}>
 					<Stack.Navigator initialRouteName="Home">
 						<Stack.Screen
 							name="Home"
@@ -76,7 +80,7 @@ const App: React.FC = () => {
 						</Stack.Screen>
 					</Stack.Navigator>
 				</NavigationContainer>
-				<StatusBar style="auto" />
+				<StatusBar style="light" />
 			</ApolloProvider>
 		</SafeAreaView>
 	);
@@ -87,5 +91,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 });
+
+const theme: Theme = {
+	...DarkTheme,
+};
 
 export default App;

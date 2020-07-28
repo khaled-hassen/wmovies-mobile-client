@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
 	StyleSheet,
 	FlatList,
@@ -6,6 +6,7 @@ import {
 	useWindowDimensions,
 	View,
 	Text,
+	RefreshControl,
 } from 'react-native';
 
 import Card from './Card';
@@ -13,10 +14,12 @@ import { IMovie } from '../config/types';
 
 // PROPS TYPES
 interface Props {
+	flatList?: React.RefObject<FlatList<IMovie>>;
 	onMorePressed?: () => void;
 	movies: IMovie[] | [];
 	loading: boolean;
 	totalMovies: number;
+	onRefresh: () => void;
 	onMovieSelected: (id: string, title: string) => void;
 }
 
@@ -34,7 +37,18 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 		[]
 	);
 
+	const [refreshing, setRefreshing] = useState(false);
 	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+
+	const handleRefresh = async () => {
+		setRefreshing(true);
+		try {
+			await props.onRefresh();
+			setRefreshing(false);
+		} catch (error) {
+			setRefreshing(false);
+		}
+	};
 
 	return (
 		<React.Fragment>
@@ -45,6 +59,20 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 			) : (
 				<React.Fragment>
 					<FlatList
+						ref={props.flatList}
+						refreshControl={
+							<RefreshControl
+								refreshing={refreshing}
+								onRefresh={handleRefresh}
+								colors={[
+									'#845EC2',
+									'#D65DB1',
+									'#FF6F91',
+									'#FF9671',
+									'#FFC75F',
+								]}
+							/>
+						}
 						contentContainerStyle={styles.container}
 						keyExtractor={(movie) => movie.id}
 						data={props.movies}

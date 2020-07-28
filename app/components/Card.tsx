@@ -51,6 +51,8 @@ const padding = 20;
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		marginBottom: 20,
+		alignItems: 'center',
 	},
 	coverImage: {
 		borderRadius: 5,

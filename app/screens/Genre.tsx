@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 import { layout, MOVIES_LOADED_PER_REQUEST, GENRES } from '../config/config';
 import { useQuery } from '@apollo/client';
 import { Picker } from '@react-native-community/picker';
@@ -9,11 +9,13 @@ import {
 	GET_MOVIES_NUMBER_BY_GENDER,
 } from '../graphql/queries';
 import MoviesListContainer from '../components/MoviesListContainer';
+import { IMovie } from '../config/types';
 
 // TODO add letter selection
 
 // PROPS TYPES
 interface Props {
+	flatList?: React.RefObject<FlatList<IMovie>>;
 	onMovieSelected: (id: string, title: string) => void;
 }
 
@@ -22,13 +24,16 @@ const Genre: React.FC<Props> = (props) => {
 	const [activeGenre, setActiveGenre] = useState('Action');
 	const queryPosition = useRef(0);
 
-	const { data, loading, error, fetchMore } = useQuery(GET_MOVIES_BY_GENRE, {
-		variables: {
-			genre: activeGenre,
-			pos: 0,
-			count: MOVIES_LOADED_PER_REQUEST,
-		},
-	});
+	const { data, loading, error, fetchMore, refetch } = useQuery(
+		GET_MOVIES_BY_GENRE,
+		{
+			variables: {
+				genre: activeGenre,
+				pos: 0,
+				count: MOVIES_LOADED_PER_REQUEST,
+			},
+		}
+	);
 	const { data: numberData, loading: numberLoading } = useQuery(
 		GET_MOVIES_NUMBER_BY_GENDER,
 		{
@@ -58,6 +63,8 @@ const Genre: React.FC<Props> = (props) => {
 		});
 	};
 
+	const handleRefresh = () => {};
+
 	useEffect(() => {
 		queryPosition.current = 0;
 	}, [activeGenre]);
@@ -74,6 +81,8 @@ const Genre: React.FC<Props> = (props) => {
 				))}
 			</Picker>
 			<MoviesListContainer
+				flatList={props.flatList}
+				onRefresh={handleRefresh}
 				onMovieSelected={props.onMovieSelected}
 				totalMovies={
 					numberData && !numberLoading

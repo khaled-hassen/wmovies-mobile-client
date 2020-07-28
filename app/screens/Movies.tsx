@@ -1,13 +1,15 @@
 import React, { useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 import { useQuery } from '@apollo/client';
 
 import { GET_MOVIES, GET_MOVIES_NUMBER } from '../graphql/queries';
 import { layout, MOVIES_LOADED_PER_REQUEST } from '../config/config';
 import MoviesListContainer from '../components/MoviesListContainer';
+import { IMovie } from '../config/types';
 
 // PROPS TYPES
 interface Props {
+	flatList?: React.RefObject<FlatList<IMovie>>;
 	onMovieSelected: (id: string, title: string) => void;
 }
 
@@ -15,7 +17,7 @@ interface Props {
 const Movies: React.FC<Props> = (props) => {
 	const queryPosition = useRef(0);
 
-	const { data, loading, error, fetchMore } = useQuery(GET_MOVIES, {
+	const { data, loading, error, fetchMore, refetch } = useQuery(GET_MOVIES, {
 		variables: { pos: 0, count: MOVIES_LOADED_PER_REQUEST },
 	});
 	const { data: numberData, loading: numberLoading } = useQuery(
@@ -40,9 +42,18 @@ const Movies: React.FC<Props> = (props) => {
 		});
 	};
 
+	const handleRefresh = async () => {
+		// const result = await refetch({
+		// 	pos: 0,
+		// 	count: MOVIES_LOADED_PER_REQUEST,
+		// });
+	};
+
 	return (
 		<View style={styles.container}>
 			<MoviesListContainer
+				flatList={props.flatList}
+				onRefresh={handleRefresh}
 				onMovieSelected={props.onMovieSelected}
 				totalMovies={
 					numberData && !numberLoading

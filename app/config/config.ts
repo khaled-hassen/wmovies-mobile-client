@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 // IMMUTABLE GLOBAL VARIABLES
 export const MOVIES_LOADED_PER_REQUEST = 30;
 export const ALPHABET = [
@@ -69,5 +67,5 @@ export const colors = {
 };
 
 export const layout = {
-	paddingTop: Platform.OS === 'android' ? 50 : 0,
+	paddingTop: 10,
 };
