@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { layout, MOVIES_LOADED_PER_REQUEST, ALPHABET } from '../config/config';
 import { useQuery } from '@apollo/client';
-import { Picker } from '@react-native-community/picker';
 
 import {
 	GET_MOVIES_BY_LETTER,
@@ -10,8 +9,7 @@ import {
 } from '../graphql/queries';
 import MoviesListContainer from '../components/MoviesListContainer';
 import { IMovie } from '../config/types';
-
-// TODO add letter selection
+import CustomPicker from '../components/CustomPicker';
 
 // PROPS TYPES
 interface Props {
@@ -72,20 +70,11 @@ const AZ: React.FC<Props> = (props) => {
 
 	return (
 		<View style={styles.container}>
-			<Picker
-				selectedValue={activeLetter}
-				style={{
-					height: 50,
-					width: 150,
-					backgroundColor: 'white',
-					alignSelf: 'center',
-				}}
-				onValueChange={(letter) => setActiveLetter(letter.toString())}
-			>
-				{ALPHABET.map((letter) => (
-					<Picker.Item label={letter} value={letter} key={letter} />
-				))}
-			</Picker>
+			<CustomPicker
+				items={ALPHABET}
+				activeItem={activeLetter}
+				onValueChange={(letter) => setActiveLetter(letter)}
+			/>
 			<MoviesListContainer
 				flatList={props.flatList}
 				onRefresh={handleRefresh}

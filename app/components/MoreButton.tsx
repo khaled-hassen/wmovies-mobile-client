@@ -21,18 +21,11 @@ const MoreButton: React.FC<Props> = (props) => {
 			activeOpacity={0.4}
 			onPress={props.onPress}
 		>
-			<View
-				style={{
-					...styles.btnContainer,
-					backgroundColor: props.loading
-						? 'transparent'
-						: styles.btnContainer.backgroundColor,
-				}}
-			>
+			<View style={styles.btnContainer}>
 				{props.loading ? (
 					<ActivityIndicator size="large" color="#FEFEFE" />
 				) : (
-					<Feather name="more-horizontal" size={30} color="black" />
+					<Feather name="more-horizontal" size={40} color="#FEFEFE" />
 				)}
 			</View>
 		</TouchableOpacity>
@@ -43,15 +36,13 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		alignItems: 'center',
-		marginBottom: 30,
+		marginBottom: 20,
 	},
 	btnContainer: {
-		backgroundColor: 'rgba(255,255,255,0.7)',
-		width: 60,
-		height: 40,
+		width: 40,
+		height: 10,
 		alignItems: 'center',
 		justifyContent: 'center',
-		borderRadius: 100,
 	},
 	btnText: { color: 'black', fontSize: 20 },
 });

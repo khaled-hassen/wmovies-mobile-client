@@ -19,7 +19,6 @@ import SearchInput from './app/components/SearchInput';
 // TODO handle errors
 // TODO polish the website
 // TODO optimize the app
-// TODO create custom pickers
 
 const client = new ApolloClient({
 	uri: 'https://wmovies-api.herokuapp.com/graphql',

@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { layout, MOVIES_LOADED_PER_REQUEST, GENRES } from '../config/config';
 import { useQuery } from '@apollo/client';
-import { Picker } from '@react-native-community/picker';
+
+import CustomPicker from '../components/CustomPicker';
 
 import {
 	GET_MOVIES_BY_GENRE,
@@ -10,8 +11,6 @@ import {
 } from '../graphql/queries';
 import MoviesListContainer from '../components/MoviesListContainer';
 import { IMovie } from '../config/types';
-
-// TODO add letter selection
 
 // PROPS TYPES
 interface Props {
@@ -71,20 +70,11 @@ const Genre: React.FC<Props> = (props) => {
 
 	return (
 		<View style={styles.container}>
-			<Picker
-				selectedValue={activeGenre}
-				style={{
-					height: 50,
-					width: 150,
-					backgroundColor: 'white',
-					alignSelf: 'center',
-				}}
-				onValueChange={(genre) => setActiveGenre(genre.toString())}
-			>
-				{GENRES.map((genre) => (
-					<Picker.Item label={genre} value={genre} key={genre} />
-				))}
-			</Picker>
+			<CustomPicker
+				activeItem={activeGenre}
+				items={GENRES}
+				onValueChange={(genre) => setActiveGenre(genre)}
+			/>
 			<MoviesListContainer
 				flatList={props.flatList}
 				onRefresh={handleRefresh}
