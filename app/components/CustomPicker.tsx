@@ -7,7 +7,6 @@ import {
 	FlatList,
 	TouchableOpacity,
 } from 'react-native';
-import { BlurView } from '@react-native-community/blur';
 
 // PROPS TYPES
 interface Props {
@@ -54,18 +53,16 @@ const CustomPicker: React.FC<Props> = (props) => {
 				visible={show}
 				onRequestClose={() => setShow(false)}
 			>
-				<BlurView>
-					<View style={styles.modalItems}>
-						<FlatList
-							showsVerticalScrollIndicator={false}
-							data={props.items}
-							keyExtractor={(item) => item}
-							renderItem={(item) => (
-								<Item data={item.item} onPress={handlePress} />
-							)}
-						/>
-					</View>
-				</BlurView>
+				<View style={styles.modalItems}>
+					<FlatList
+						showsVerticalScrollIndicator={false}
+						data={props.items}
+						keyExtractor={(item) => item}
+						renderItem={(item) => (
+							<Item data={item.item} onPress={handlePress} />
+						)}
+					/>
+				</View>
 			</Modal>
 		</View>
 	);
