@@ -7,6 +7,7 @@ import {
 	FlatList,
 	TouchableOpacity,
 } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 
 // PROPS TYPES
 interface Props {
@@ -44,6 +45,12 @@ const CustomPicker: React.FC<Props> = (props) => {
 					<Text style={styles.activeItemText}>
 						{props.activeItem}
 					</Text>
+					<AntDesign
+						style={{ marginTop: 10, marginLeft: 15 }}
+						name="down"
+						size={18}
+						color="#FEFEFE"
+					/>
 				</View>
 			</TouchableOpacity>
 
@@ -53,16 +60,22 @@ const CustomPicker: React.FC<Props> = (props) => {
 				visible={show}
 				onRequestClose={() => setShow(false)}
 			>
-				<View style={styles.modalItems}>
-					<FlatList
-						showsVerticalScrollIndicator={false}
-						data={props.items}
-						keyExtractor={(item) => item}
-						renderItem={(item) => (
-							<Item data={item.item} onPress={handlePress} />
-						)}
-					/>
-				</View>
+				<TouchableOpacity
+					activeOpacity={1}
+					style={styles.touchOverlay}
+					onPress={() => setShow(false)}
+				>
+					<View style={styles.modalItems}>
+						<FlatList
+							showsVerticalScrollIndicator={false}
+							data={props.items}
+							keyExtractor={(item) => item}
+							renderItem={(item) => (
+								<Item data={item.item} onPress={handlePress} />
+							)}
+						/>
+					</View>
+				</TouchableOpacity>
 			</Modal>
 		</View>
 	);
@@ -70,8 +83,16 @@ const CustomPicker: React.FC<Props> = (props) => {
 
 const styles = StyleSheet.create({
 	container: {},
+	touchOverlay: {
+		position: 'absolute',
+		left: 0,
+		right: 0,
+		top: 0,
+		bottom: 0,
+	},
 	activeItemContainer: {
-		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'center',
 		height: 50,
 	},
 	activeItemText: {

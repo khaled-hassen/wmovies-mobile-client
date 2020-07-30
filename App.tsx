@@ -19,6 +19,10 @@ import SearchInput from './app/components/SearchInput';
 // TODO handle errors
 // TODO polish the website
 // TODO optimize the app
+// TODO add a launch scree
+// TODO add play video ability
+// TODO when orienting the screen the FlatList takes time to update fix it
+// TODO fix odd layout when having less items in a row than the max
 
 const client = new ApolloClient({
 	uri: 'https://wmovies-api.herokuapp.com/graphql',

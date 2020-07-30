@@ -17,7 +17,9 @@ interface Props {
 const To30Rated: React.FC<Props> = (props) => {
 	const { data, loading, error, refetch } = useQuery(GET_TOP_RATED);
 
-	const handleRefresh = () => {};
+	const handleRefresh = async () => {
+		await refetch();
+	};
 
 	return (
 		<View style={styles.container}>

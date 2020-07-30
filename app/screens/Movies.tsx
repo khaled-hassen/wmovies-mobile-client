@@ -43,10 +43,10 @@ const Movies: React.FC<Props> = (props) => {
 	};
 
 	const handleRefresh = async () => {
-		// const result = await refetch({
-		// 	pos: 0,
-		// 	count: MOVIES_LOADED_PER_REQUEST,
-		// });
+		await refetch({
+			pos: 0,
+			count: MOVIES_LOADED_PER_REQUEST,
+		});
 	};
 
 	return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -6,6 +6,7 @@ import {
 	ImageBackground,
 	Button,
 	ScrollView,
+	RefreshControl,
 } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { useQuery } from '@apollo/client';
@@ -20,12 +21,23 @@ interface Props {
 
 // COMPONENT
 const MovieScreen: React.FC<Props> = ({ route }) => {
+	const [refreshing, setRefreshing] = useState(false);
 	const { data, error, loading, refetch } = useQuery(GET_MOVIE, {
 		variables: { id: route.params.id },
 	});
 
 	const handlePress = () => {
 		console.log(data.movie.streamLink);
+	};
+
+	const handleRefresh = async () => {
+		setRefreshing(true);
+		try {
+			await refetch({ id: route.params.id });
+			setRefreshing(false);
+		} catch {
+			setRefreshing(false);
+		}
 	};
 
 	return (
@@ -38,7 +50,22 @@ const MovieScreen: React.FC<Props> = ({ route }) => {
 					style={styles.bgImage}
 					blurRadius={2}
 				>
-					<ScrollView contentContainerStyle={styles.infoContainer}>
+					<ScrollView
+						contentContainerStyle={styles.infoContainer}
+						refreshControl={
+							<RefreshControl
+								refreshing={refreshing}
+								onRefresh={handleRefresh}
+								colors={[
+									'#845EC2',
+									'#D65DB1',
+									'#FF6F91',
+									'#FF9671',
+									'#FFC75F',
+								]}
+							/>
+						}
+					>
 						<Text>{data.movie.title}</Text>
 						<Button title="Play" onPress={handlePress} />
 						<Text style={styles.infoTitle}>

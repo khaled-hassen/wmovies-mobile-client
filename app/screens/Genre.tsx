@@ -62,7 +62,13 @@ const Genre: React.FC<Props> = (props) => {
 		});
 	};
 
-	const handleRefresh = () => {};
+	const handleRefresh = async () => {
+		await refetch({
+			genre: activeGenre,
+			pos: 0,
+			count: MOVIES_LOADED_PER_REQUEST,
+		});
+	};
 
 	useEffect(() => {
 		queryPosition.current = 0;

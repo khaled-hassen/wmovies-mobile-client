@@ -6,6 +6,7 @@ import {
 	View,
 	Text,
 	RefreshControl,
+	ActivityIndicator,
 } from 'react-native';
 
 import Card from './Card';
@@ -19,7 +20,7 @@ interface Props {
 	movies: IMovie[] | [];
 	loading: boolean;
 	totalMovies: number;
-	onRefresh: () => void;
+	onRefresh: () => Promise<void>;
 	onMovieSelected: (id: string, title: string) => void;
 }
 
@@ -46,7 +47,7 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 		try {
 			await props.onRefresh();
 			setRefreshing(false);
-		} catch (error) {
+		} catch {
 			setRefreshing(false);
 		}
 	};
@@ -66,8 +67,8 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 	return (
 		<React.Fragment>
 			{props.loading ? (
-				<View>
-					<Text>Loading ...</Text>
+				<View style={styles.loader}>
+					<ActivityIndicator size="large" color="#FEFEFE" />
 				</View>
 			) : (
 				<React.Fragment>
@@ -115,6 +116,11 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
+	},
+	loader: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 });
 

@@ -62,7 +62,13 @@ const AZ: React.FC<Props> = (props) => {
 		});
 	};
 
-	const handleRefresh = () => {};
+	const handleRefresh = async () => {
+		await refetch({
+			letter: activeLetter,
+			pos: 0,
+			count: MOVIES_LOADED_PER_REQUEST,
+		});
+	};
 
 	useEffect(() => {
 		queryPosition.current = 0;
