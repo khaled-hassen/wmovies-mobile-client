@@ -4,12 +4,11 @@ import {
 	FlatList,
 	useWindowDimensions,
 	View,
-	Text,
 	RefreshControl,
 	ActivityIndicator,
 } from 'react-native';
 
-import Card from './Card';
+import MovieCard from './MovieCard';
 import { IMovie } from '../config/types';
 import MoreButton from './MoreButton';
 
@@ -20,7 +19,7 @@ interface Props {
 	movies: IMovie[] | [];
 	loading: boolean;
 	totalMovies: number;
-	onRefresh: () => Promise<void>;
+	onRefresh?: () => Promise<void>;
 	onMovieSelected: (id: string, title: string) => void;
 }
 
@@ -28,7 +27,7 @@ interface Props {
 const MoviesListContainer: React.FC<Props> = (props) => {
 	const renderMovie = useCallback(
 		({ item }: { item: IMovie }) => (
-			<Card
+			<MovieCard
 				onMovieSelected={props.onMovieSelected}
 				id={item.id}
 				title={item.title}
@@ -43,6 +42,8 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
 	const handleRefresh = async () => {
+		if (!props.onRefresh) return;
+
 		setRefreshing(true);
 		try {
 			await props.onRefresh();

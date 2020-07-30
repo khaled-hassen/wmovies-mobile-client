@@ -22,7 +22,7 @@ const formatTitle = (title: string) => {
 	return title.slice(0, 19) + '...';
 };
 
-const Card: React.FC<Props> = (props) => {
+const MovieCard: React.FC<Props> = (props) => {
 	const FALLBACK_IMAGE_SRC =
 		'https://vw.ffmovies.sc/wp-content/themes/assets/images/noimg.png';
 	const [imageSrc, setImageSrc] = useState(props.img.src);
@@ -74,4 +74,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default Card;
+export default MovieCard;

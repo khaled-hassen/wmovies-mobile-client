@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 	},
 	modalItems: {
-		backgroundColor: '#1b262c',
+		backgroundColor: 'rgba(18, 18, 18, 0.94)',
 		paddingTop: 13,
 		maxHeight: 250,
 		position: 'absolute',

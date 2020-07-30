@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { StyleSheet, FlatList } from 'react-native';
-import { BlurView } from 'expo';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StackNavigationProp } from '@react-navigation/stack';
 import {
