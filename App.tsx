@@ -21,7 +21,6 @@ import SearchInput from './app/components/SearchInput';
 // TODO optimize the app
 // TODO add a launch screen
 // TODO when orienting the screen the FlatList takes time to update fix it
-// TODO fix odd layout when having less items in a row than the max
 
 const client = new ApolloClient({
 	uri: 'https://wmovies-api.herokuapp.com/graphql',

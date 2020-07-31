@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -8,18 +8,19 @@ import {
 	ScrollView,
 	ActivityIndicator,
 	TouchableOpacity,
+	Modal,
 } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useQuery } from '@apollo/client';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
-import { WebView } from 'react-native-webview';
+import { Video } from 'expo-av';
 
 import { TStackScreens } from '../config/types';
 import { GET_MOVIE } from '../graphql/queries';
 
-// TODO open webView in fullscreen
+// TODO extract the mp4 from the streaming links instead of the embedded html
 
 // PROPS TYPES
 interface Props {
@@ -32,10 +33,8 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 	const { data, error, loading } = useQuery(GET_MOVIE, {
 		variables: { id: route.params.id },
 	});
-
-	const handlePress = () => {
-		console.log(data.movie.streamLink);
-	};
+	const [show, setShow] = useState(false);
+	const [videoLoading, setVideoLoading] = useState(false);
 
 	return (
 		<View style={styles.container}>
@@ -67,7 +66,7 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 						</Text>
 						<TouchableOpacity
 							activeOpacity={0.4}
-							onPress={handlePress}
+							onPress={() => setShow(true)}
 							style={styles.playBtn}
 						>
 							<Feather name="play" size={50} color="#fde9df" />
@@ -90,21 +89,45 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 						<Text style={{ ...styles.info, marginBottom: 30 }}>
 							Description: <Text>{data.movie.description}</Text>
 						</Text>
-						<WebView
-							javaScriptEnabled
-							allowsFullscreenVideo
-							source={{ uri: data.movie.streamLink }}
-							style={{
-								marginTop: 20,
-								backgroundColor: 'red',
-								width: 300,
-								height: 300,
-							}}
-						/>
 					</ScrollView>
+
+					<Modal
+						animationType="fade"
+						visible={show}
+						statusBarTranslucent={show}
+						onRequestClose={() => setShow(false)}
+					>
+						{videoLoading && (
+							<View style={styles.videoLoader}>
+								<ActivityIndicator
+									size="large"
+									color="#FEFEFE"
+								/>
+							</View>
+						)}
+						<Video
+							source={{
+								uri:
+									'https://lino.vidoo.tv/gz4b623bifehqifnhqtpmil2op5hem7y5xgnbaztbhm4huhsize4c7owozaa/v.mp4',
+							}}
+							rate={1.0}
+							volume={1.0}
+							isMuted={false}
+							shouldPlay
+							resizeMode="contain"
+							style={styles.videoPlayer}
+							useNativeControls
+							onLoadStart={() => setVideoLoading(true)}
+							onLoad={() => setVideoLoading(false)}
+						/>
+					</Modal>
 				</ImageBackground>
 			)}
-			<StatusBar style="light" backgroundColor={statusBgColor} />
+			<StatusBar
+				style="light"
+				backgroundColor={statusBgColor}
+				hidden={show}
+			/>
 		</View>
 	);
 };
@@ -155,6 +178,12 @@ const styles = StyleSheet.create({
 		right: 0,
 		zIndex: 100,
 	},
+	videoPlayer: {
+		backgroundColor: 'black',
+		width: '100%',
+		height: '100%',
+	},
+	videoLoader: { position: 'absolute', zIndex: 100, top: '47%', left: '47%' },
 });
 
 export default MovieScreen;

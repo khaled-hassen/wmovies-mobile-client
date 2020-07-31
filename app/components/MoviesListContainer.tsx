@@ -23,11 +23,26 @@ interface Props {
 	onMovieSelected: (id: string, title: string) => void;
 }
 
+const MISSING = 'MISSING';
+const getMissingItems = (totalItems: number, itemsPerRow: number) => {
+	const rowsNumber = Math.ceil(totalItems / itemsPerRow);
+	const fullRowsItems = rowsNumber * itemsPerRow; // items number if all rows are full
+	const missingItemsNumber = fullRowsItems - totalItems;
+
+	const missingMovies: IMovie[] = [];
+	for (let i = 0; i < missingItemsNumber; ++i) {
+		missingMovies.push({ id: MISSING, title: '', img: { src: '' } });
+	}
+
+	return missingMovies;
+};
+
 // COMPONENT
 const MoviesListContainer: React.FC<Props> = (props) => {
 	const renderMovie = useCallback(
 		({ item }: { item: IMovie }) => (
 			<MovieCard
+				missing={item.id === MISSING}
 				onMovieSelected={props.onMovieSelected}
 				id={item.id}
 				title={item.title}
@@ -40,6 +55,7 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 	const [refreshing, setRefreshing] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+	const numColumns = Math.floor(screenWidth / 153);
 
 	const handleRefresh = async () => {
 		if (!props.onRefresh) return;
@@ -90,14 +106,17 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 						}
 						contentContainerStyle={styles.container}
 						keyExtractor={(movie) => movie.id}
-						data={props.movies}
+						data={[
+							...props.movies,
+							...getMissingItems(props.movies.length, numColumns),
+						]}
 						renderItem={renderMovie}
 						key={
 							screenHeight >= screenWidth
 								? 'portrait'
 								: 'landscape'
 						}
-						numColumns={Math.floor(screenWidth / 153)}
+						numColumns={numColumns}
 						ListFooterComponent={
 							props.onMorePressed &&
 							props.movies.length < props.totalMovies ? (
