@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -16,11 +16,10 @@ import { useQuery } from '@apollo/client';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { Video } from 'expo-av';
+import axios from 'axios';
 
 import { TStackScreens } from '../config/types';
 import { GET_MOVIE } from '../graphql/queries';
-
-// TODO extract the mp4 from the streaming links instead of the embedded html
 
 // PROPS TYPES
 interface Props {
@@ -33,8 +32,48 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 	const { data, error, loading } = useQuery(GET_MOVIE, {
 		variables: { id: route.params.id },
 	});
+
 	const [show, setShow] = useState(false);
 	const [videoLoading, setVideoLoading] = useState(false);
+	const [mp4Url, setMp4Url] = useState('');
+	const [mp4UrlLoading, setMp4UrlLoading] = useState(false);
+
+	const handlePress = () => {
+		// TODO add error modal
+		if (mp4Url.trim().length > 0) setShow(true);
+	};
+
+	// extract the mp4 file
+	useEffect(() => {
+		(async () => {
+			if (!loading && data) {
+				setMp4UrlLoading(true);
+				if (data.movie.streamLink.trim().length === 0) {
+					setMp4Url('');
+					setMp4UrlLoading(false);
+				}
+
+				try {
+					const res = (await axios.get(data.movie.streamLink)) as {
+						data: string;
+					};
+
+					const mp4FileIndex = res.data.lastIndexOf('file:"https://');
+					const fileExtensionIndex = res.data.indexOf('mp4');
+
+					const mp4File = res.data.slice(
+						mp4FileIndex + 'file:"'.length,
+						fileExtensionIndex + 'mp4'.length
+					);
+					setMp4Url(mp4File);
+					setMp4UrlLoading(false);
+				} catch {
+					setMp4Url('');
+					setMp4UrlLoading(false);
+				}
+			}
+		})();
+	}, [data, loading]);
 
 	return (
 		<View style={styles.container}>
@@ -64,13 +103,26 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 						<Text style={styles.movieTitle}>
 							{data.movie.title}
 						</Text>
-						<TouchableOpacity
-							activeOpacity={0.4}
-							onPress={() => setShow(true)}
-							style={styles.playBtn}
-						>
-							<Feather name="play" size={50} color="#fde9df" />
-						</TouchableOpacity>
+						{mp4UrlLoading ? (
+							<View style={{ marginVertical: 38 }}>
+								<ActivityIndicator
+									size="large"
+									color="#FEFEFE"
+								/>
+							</View>
+						) : (
+							<TouchableOpacity
+								activeOpacity={0.4}
+								onPress={handlePress}
+								style={{ marginVertical: 30 }}
+							>
+								<Feather
+									name="play"
+									size={50}
+									color="#fde9df"
+								/>
+							</TouchableOpacity>
+						)}
 						<Text style={styles.info}>
 							Genre: <Text>{data.movie.genre.join(', ')}</Text>
 						</Text>
@@ -106,10 +158,7 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 							</View>
 						)}
 						<Video
-							source={{
-								uri:
-									'https://lino.vidoo.tv/gz4b623bifehqifnhqtpmil2op5hem7y5xgnbaztbhm4huhsize4c7owozaa/v.mp4',
-							}}
+							source={{ uri: mp4Url }}
 							rate={1.0}
 							volume={1.0}
 							isMuted={false}
@@ -119,6 +168,7 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 							useNativeControls
 							onLoadStart={() => setVideoLoading(true)}
 							onLoad={() => setVideoLoading(false)}
+							onError={() => 0 /*// TODO add error modal */}
 						/>
 					</Modal>
 				</ImageBackground>
@@ -164,9 +214,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
-	playBtn: {
-		marginVertical: 30,
-	},
 	returnBtnContainer: {
 		backgroundColor: statusBgColor,
 		position: 'absolute',
@@ -183,7 +230,7 @@ const styles = StyleSheet.create({
 		width: '100%',
 		height: '100%',
 	},
-	videoLoader: { position: 'absolute', zIndex: 100, top: '47%', left: '47%' },
+	videoLoader: { position: 'absolute', zIndex: 100, top: '46%', left: '46%' },
 });
 
 export default MovieScreen;
