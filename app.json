@@ -16,7 +16,13 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "android": {
+      "package": "com.khaledDev.wmovies",
+      "versionCode": 1
+    },
     "ios": {
+      "bundleIdentifier": "com.khaledDev.wmovies",
+      "buildNumber": "1.0.0",
       "supportsTablet": true
     },
     "web": {
