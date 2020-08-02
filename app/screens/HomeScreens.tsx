@@ -25,12 +25,19 @@ interface Props {
 // COMPONENT
 const HomeScreens: React.FC<Props> = ({ navigation }) => {
 	const flatList = useRef<FlatList<IMovie>>(null);
+
 	const listeners = {
-		tabPress: () =>
-			flatList.current?.scrollToIndex({
-				index: 0,
-				animated: true,
-			}),
+		tabPress: () => {
+			if (
+				flatList.current &&
+				flatList.current.props.data &&
+				flatList.current.props.data.length > 0
+			)
+				flatList.current.scrollToIndex({
+					index: 0,
+					animated: true,
+				});
+		},
 	};
 
 	const getIconColor = (focused: boolean) =>
@@ -141,6 +148,8 @@ const HomeScreens: React.FC<Props> = ({ navigation }) => {
 	);
 };
 
-const styles = StyleSheet.create({ container: {} });
+const styles = StyleSheet.create({
+	container: {},
+});
 
 export default HomeScreens;

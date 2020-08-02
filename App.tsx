@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
+import { useNetInfo } from '@react-native-community/netinfo';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import {
 	NavigationContainer,
@@ -15,13 +16,7 @@ import HomeScreens from './app/screens/HomeScreens';
 import Search from './app/screens/Search';
 import SearchButton from './app/components/SearchButton';
 import SearchInput from './app/components/SearchInput';
-
-// TODO handle errors
-// TODO polish the website
-// TODO optimize the app
-// TODO add a launch screen
-// TODO when orienting the screen the FlatList takes time to update fix it
-// TODO add no internet error
+import { colors } from './app/config/config';
 
 const client = new ApolloClient({
 	uri: 'https://wmovies-api.herokuapp.com/graphql',
@@ -33,6 +28,7 @@ const Stack = createStackNavigator<TStackScreens>();
 
 const App: React.FC = () => {
 	const [movieSearch, setMovieSearch] = useState('');
+	const { isInternetReachable } = useNetInfo();
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -41,7 +37,6 @@ const App: React.FC = () => {
 					<Stack.Navigator initialRouteName="Home">
 						<Stack.Screen
 							name="Home"
-							component={HomeScreens}
 							options={({ navigation }) => ({
 								headerRight: () => (
 									<SearchButton
@@ -51,12 +46,33 @@ const App: React.FC = () => {
 									/>
 								),
 							})}
-						/>
+						>
+							{(props) => (
+								<React.Fragment>
+									{!isInternetReachable && (
+										<View
+											style={styles.noInternetContainer}
+										>
+											<Text style={styles.noInternetText}>
+												No Internet Connection
+											</Text>
+										</View>
+									)}
+									<HomeScreens {...props} />
+								</React.Fragment>
+							)}
+						</Stack.Screen>
 						<Stack.Screen
 							name="Movie"
-							component={MovieScreen}
 							options={{ headerShown: false }}
-						/>
+						>
+							{(props) => (
+								<MovieScreen
+									{...props}
+									isInternetReachable={!!isInternetReachable}
+								/>
+							)}
+						</Stack.Screen>
 						<Stack.Screen
 							listeners={{
 								beforeRemove: () => setMovieSearch(''),
@@ -75,7 +91,24 @@ const App: React.FC = () => {
 							}}
 						>
 							{(props) => (
-								<Search {...props} movie={movieSearch} />
+								<React.Fragment>
+									{!isInternetReachable && (
+										<View
+											style={styles.noInternetContainer}
+										>
+											<Text style={styles.noInternetText}>
+												No Internet Connection
+											</Text>
+										</View>
+									)}
+									<Search
+										{...props}
+										movie={movieSearch}
+										isInternetReachable={
+											!!isInternetReachable
+										}
+									/>
+								</React.Fragment>
 							)}
 						</Stack.Screen>
 					</Stack.Navigator>
@@ -89,6 +122,16 @@ const App: React.FC = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+	},
+	noInternetContainer: {
+		backgroundColor: colors.error,
+		alignItems: 'center',
+		paddingVertical: 5,
+	},
+	noInternetText: {
+		color: '#FEFEFE',
+		fontSize: 20,
+		textAlign: 'center',
 	},
 });
 

@@ -4,11 +4,11 @@
     "slug": "wmovies",
     "version": "1.0.0",
     "orientation": "default",
-    "icon": "",
+    "icon": "./assets/favicon.png",
     "splash": {
       "image": "",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0F0F0F"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,6 +22,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": ""
+    "description": "Watch movies for free"
   }
 }

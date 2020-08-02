@@ -23,7 +23,7 @@ const Genre: React.FC<Props> = (props) => {
 	const [activeGenre, setActiveGenre] = useState('Action');
 	const queryPosition = useRef(0);
 
-	const { data, loading, error, fetchMore, refetch } = useQuery(
+	const { data, loading, fetchMore, refetch } = useQuery(
 		GET_MOVIES_BY_GENRE,
 		{
 			variables: {

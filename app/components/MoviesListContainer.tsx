@@ -11,6 +11,8 @@ import {
 import MovieCard from './MovieCard';
 import { IMovie } from '../config/types';
 import MoreButton from './MoreButton';
+import { MOVIES_LOADED_PER_REQUEST } from '../config/config';
+import NoMoviesError from './NoMoviesError';
 
 // PROPS TYPES
 interface Props {
@@ -25,6 +27,8 @@ interface Props {
 
 const MISSING = 'MISSING';
 const getMissingItems = (totalItems: number, itemsPerRow: number) => {
+	if (totalItems === 0) return [];
+
 	const rowsNumber = Math.ceil(totalItems / itemsPerRow);
 	const fullRowsItems = rowsNumber * itemsPerRow; // items number if all rows are full
 	const missingItemsNumber = fullRowsItems - totalItems;
@@ -87,9 +91,12 @@ const MoviesListContainer: React.FC<Props> = (props) => {
 				<View style={styles.loader}>
 					<ActivityIndicator size="large" color="#FEFEFE" />
 				</View>
+			) : props.movies.length === 0 ? (
+				<NoMoviesError />
 			) : (
 				<React.Fragment>
 					<FlatList
+						initialNumToRender={MOVIES_LOADED_PER_REQUEST}
 						ref={props.flatList}
 						refreshControl={
 							<RefreshControl

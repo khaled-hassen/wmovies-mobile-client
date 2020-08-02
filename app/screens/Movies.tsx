@@ -17,7 +17,7 @@ interface Props {
 const Movies: React.FC<Props> = (props) => {
 	const queryPosition = useRef(0);
 
-	const { data, loading, error, fetchMore, refetch } = useQuery(GET_MOVIES, {
+	const { data, loading, fetchMore, refetch } = useQuery(GET_MOVIES, {
 		variables: { pos: 0, count: MOVIES_LOADED_PER_REQUEST },
 	});
 	const { data: numberData, loading: numberLoading } = useQuery(

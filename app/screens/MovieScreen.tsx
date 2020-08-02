@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
 	StyleSheet,
 	Text,
@@ -13,35 +13,63 @@ import {
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useQuery } from '@apollo/client';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons, Feather, AntDesign } from '@expo/vector-icons';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { Video } from 'expo-av';
 import axios from 'axios';
 
+import ErrorModal from '../components/ErrorModal';
 import { TStackScreens } from '../config/types';
 import { GET_MOVIE } from '../graphql/queries';
+import { colors } from '../config/config';
 
 // PROPS TYPES
 interface Props {
 	route: RouteProp<TStackScreens, 'Movie'>;
 	navigation: StackNavigationProp<TStackScreens, 'Movie'>;
+	isInternetReachable: boolean;
 }
 
 // COMPONENT
-const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
-	const { data, error, loading } = useQuery(GET_MOVIE, {
+const MovieScreen: React.FC<Props> = ({
+	route,
+	navigation,
+	isInternetReachable,
+}) => {
+	const { data, loading } = useQuery(GET_MOVIE, {
 		variables: { id: route.params.id },
 	});
 
-	const [show, setShow] = useState(false);
+	const [showVideo, setShowVideo] = useState(false);
 	const [videoLoading, setVideoLoading] = useState(false);
 	const [mp4Url, setMp4Url] = useState('');
 	const [mp4UrlLoading, setMp4UrlLoading] = useState(false);
+	const [showError, setShowError] = useState(false);
+
+	const errorModalTimer = useRef(0);
+
+	const showErrorModal = () => {
+		if (!showError) {
+			setShowError(true);
+			errorModalTimer.current = setTimeout(
+				() => setShowError(false),
+				2500
+			);
+		}
+	};
 
 	const handlePress = () => {
-		// TODO add error modal
-		if (mp4Url.trim().length > 0) setShow(true);
+		if (mp4Url.trim().length > 0 && isInternetReachable) setShowVideo(true);
+		else showErrorModal();
 	};
+
+	// clear timer
+	useEffect(
+		() => () => {
+			clearTimeout(errorModalTimer.current);
+		},
+		[]
+	);
 
 	// extract the mp4 file
 	useEffect(() => {
@@ -51,25 +79,31 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 				if (data.movie.streamLink.trim().length === 0) {
 					setMp4Url('');
 					setMp4UrlLoading(false);
-				}
+					showErrorModal();
+				} else {
+					try {
+						const res = (await axios.get(
+							data.movie.streamLink
+						)) as {
+							data: string;
+						};
 
-				try {
-					const res = (await axios.get(data.movie.streamLink)) as {
-						data: string;
-					};
+						const mp4FileIndex = res.data.lastIndexOf(
+							'file:"https://'
+						);
+						const fileExtensionIndex = res.data.indexOf('mp4');
 
-					const mp4FileIndex = res.data.lastIndexOf('file:"https://');
-					const fileExtensionIndex = res.data.indexOf('mp4');
-
-					const mp4File = res.data.slice(
-						mp4FileIndex + 'file:"'.length,
-						fileExtensionIndex + 'mp4'.length
-					);
-					setMp4Url(mp4File);
-					setMp4UrlLoading(false);
-				} catch {
-					setMp4Url('');
-					setMp4UrlLoading(false);
+						const mp4File = res.data.slice(
+							mp4FileIndex + 'file:"'.length,
+							fileExtensionIndex + 'mp4'.length
+						);
+						setMp4Url(mp4File);
+						setMp4UrlLoading(false);
+					} catch {
+						setMp4Url('');
+						setMp4UrlLoading(false);
+						showErrorModal();
+					}
 				}
 			}
 		})();
@@ -90,7 +124,7 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 				<View style={styles.loader}>
 					<ActivityIndicator size="large" color="#FEFEFE" />
 				</View>
-			) : (
+			) : data ? (
 				<ImageBackground
 					source={{ uri: data.movie.img.src }}
 					style={styles.bgImage}
@@ -103,26 +137,44 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 						<Text style={styles.movieTitle}>
 							{data.movie.title}
 						</Text>
-						{mp4UrlLoading ? (
+						{mp4UrlLoading && (
 							<View style={{ marginVertical: 38 }}>
 								<ActivityIndicator
 									size="large"
 									color="#FEFEFE"
 								/>
 							</View>
-						) : (
-							<TouchableOpacity
-								activeOpacity={0.4}
-								onPress={handlePress}
-								style={{ marginVertical: 30 }}
-							>
-								<Feather
-									name="play"
-									size={50}
-									color="#fde9df"
-								/>
-							</TouchableOpacity>
 						)}
+						{!mp4UrlLoading &&
+							(mp4Url.trim().length === 0 ||
+								!isInternetReachable) && (
+								<TouchableOpacity
+									activeOpacity={0.4}
+									onPress={handlePress}
+									style={{ marginVertical: 30 }}
+								>
+									<AntDesign
+										name="close"
+										size={50}
+										color="#fde9df"
+									/>
+								</TouchableOpacity>
+							)}
+						{!mp4UrlLoading &&
+							mp4Url.trim().length > 0 &&
+							isInternetReachable && (
+								<TouchableOpacity
+									activeOpacity={0.4}
+									onPress={handlePress}
+									style={{ marginVertical: 30 }}
+								>
+									<Feather
+										name="play"
+										size={50}
+										color="#fde9df"
+									/>
+								</TouchableOpacity>
+							)}
 						<Text style={styles.info}>
 							Genre: <Text>{data.movie.genre.join(', ')}</Text>
 						</Text>
@@ -143,11 +195,24 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 						</Text>
 					</ScrollView>
 
+					<ErrorModal
+						show={showError}
+						message={
+							isInternetReachable
+								? 'Cannot fetch streaming link. Please try later.'
+								: 'No Internet Connection'
+						}
+						onRequestClose={() => {
+							setShowError(false);
+							clearTimeout(errorModalTimer.current);
+						}}
+					/>
+
 					<Modal
 						animationType="fade"
-						visible={show}
-						statusBarTranslucent={show}
-						onRequestClose={() => setShow(false)}
+						visible={showVideo}
+						statusBarTranslucent={showVideo}
+						onRequestClose={() => setShowVideo(false)}
 					>
 						{videoLoading && (
 							<View style={styles.videoLoader}>
@@ -168,15 +233,24 @@ const MovieScreen: React.FC<Props> = ({ route, navigation }) => {
 							useNativeControls
 							onLoadStart={() => setVideoLoading(true)}
 							onLoad={() => setVideoLoading(false)}
-							onError={() => 0 /*// TODO add error modal */}
+							onError={() => {
+								setShowVideo(false);
+								showErrorModal();
+							}}
 						/>
 					</Modal>
 				</ImageBackground>
+			) : (
+				<View style={styles.noInternetContainer}>
+					<Text style={styles.noInternetText}>
+						No Internet Connection
+					</Text>
+				</View>
 			)}
 			<StatusBar
 				style="light"
 				backgroundColor={statusBgColor}
-				hidden={show}
+				hidden={showVideo}
 			/>
 		</View>
 	);
@@ -231,6 +305,17 @@ const styles = StyleSheet.create({
 		height: '100%',
 	},
 	videoLoader: { position: 'absolute', zIndex: 100, top: '46%', left: '46%' },
+	noInternetContainer: {
+		backgroundColor: colors.error,
+		alignItems: 'center',
+		paddingVertical: 5,
+		marginTop: getStatusBarHeight() + 60,
+	},
+	noInternetText: {
+		color: '#FEFEFE',
+		fontSize: 20,
+		textAlign: 'center',
+	},
 });
 
 export default MovieScreen;

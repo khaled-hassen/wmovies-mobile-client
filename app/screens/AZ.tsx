@@ -22,7 +22,7 @@ const AZ: React.FC<Props> = (props) => {
 	const [activeLetter, setActiveLetter] = useState('A');
 	const queryPosition = useRef(0);
 
-	const { data, loading, error, fetchMore, refetch } = useQuery(
+	const { data, loading, fetchMore, refetch } = useQuery(
 		GET_MOVIES_BY_LETTER,
 		{
 			variables: {

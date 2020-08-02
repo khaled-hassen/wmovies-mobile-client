@@ -62,10 +62,10 @@ export const GENRES = [
 
 // STYLES
 export const colors = {
-	dark: '#1b262c',
-	light: '#FFF',
+	light: '#FEFEFE',
 	activeColor: '#3BC2ED',
 	inactiveColor: '#FEFEFE',
+	error: '#900d0d',
 };
 
 export const layout = {
